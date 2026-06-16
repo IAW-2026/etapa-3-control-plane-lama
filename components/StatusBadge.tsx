@@ -1,0 +1,96 @@
+import { cn } from "@/lib/utils";
+
+const styles: Record<string, string> = {
+  active: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  activa: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  approved: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  delivered: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  entregado: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  paid: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  aprobado: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  pagada: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  finalizada: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  resolved: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  pending: "border-amber-200 bg-amber-50 text-amber-700",
+  pendiente: "border-amber-200 bg-amber-50 text-amber-700",
+  pendiente_pago: "border-amber-200 bg-amber-50 text-amber-700",
+  packed: "border-amber-200 bg-amber-50 text-amber-700",
+  under_review: "border-amber-200 bg-amber-50 text-amber-700",
+  en_preparacion: "border-amber-200 bg-amber-50 text-amber-700",
+  in_transit: "border-sky-200 bg-sky-50 text-sky-700",
+  despachado: "border-sky-200 bg-sky-50 text-sky-700",
+  despachada: "border-sky-200 bg-sky-50 text-sky-700",
+  returned: "border-slate-200 bg-slate-50 text-slate-700",
+  shipped: "border-sky-200 bg-sky-50 text-sky-700",
+  paused: "border-slate-200 bg-slate-50 text-slate-700",
+  draft: "border-slate-200 bg-slate-50 text-slate-700",
+  inactive: "border-slate-200 bg-slate-50 text-slate-700",
+  inactiva: "border-slate-200 bg-slate-50 text-slate-700",
+  unknown: "border-slate-200 bg-slate-50 text-slate-700",
+  open: "border-red-200 bg-red-50 text-red-700",
+  blocked: "border-red-200 bg-red-50 text-red-700",
+  cancelled: "border-red-200 bg-red-50 text-red-700",
+  cancelada: "border-red-200 bg-red-50 text-red-700",
+  cancelado: "border-red-200 bg-red-50 text-red-700",
+  delayed: "border-red-200 bg-red-50 text-red-700",
+  disputed: "border-red-200 bg-red-50 text-red-700",
+  failed: "border-red-200 bg-red-50 text-red-700",
+  rejected: "border-red-200 bg-red-50 text-red-700",
+  rechazado: "border-red-200 bg-red-50 text-red-700",
+  refunded: "border-violet-200 bg-violet-50 text-violet-700",
+  sold: "border-violet-200 bg-violet-50 text-violet-700",
+};
+
+const labels: Record<string, string> = {
+  active: "Activo",
+  activa: "Activa",
+  approved: "Aprobado",
+  aprobado: "Aprobado",
+  delivered: "Entregado",
+  entregado: "Entregado",
+  paid: "Pagado",
+  pagada: "Pagada",
+  finalizada: "Finalizada",
+  resolved: "Resuelto",
+  pending: "Pendiente",
+  pendiente: "Pendiente",
+  pendiente_pago: "Pendiente de pago",
+  packed: "Preparado",
+  under_review: "En revision",
+  en_preparacion: "En preparacion",
+  in_transit: "En transito",
+  despachado: "Despachado",
+  despachada: "Despachada",
+  returned: "Devuelto",
+  shipped: "Enviado",
+  paused: "Pausado",
+  draft: "Borrador",
+  inactive: "Inactivo",
+  inactiva: "Inactiva",
+  unknown: "No disponible",
+  open: "Abierta",
+  blocked: "Bloqueado",
+  cancelled: "Cancelado",
+  cancelada: "Cancelada",
+  cancelado: "Cancelado",
+  delayed: "Demorado",
+  disputed: "Disputado",
+  failed: "Fallido",
+  rejected: "Rechazado",
+  rechazado: "Rechazado",
+  refunded: "Reintegrado",
+  sold: "Vendido",
+};
+
+export function StatusBadge({ status }: { status: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em]",
+        styles[status] ?? "border-lama-border bg-white text-lama-muted",
+      )}
+    >
+      {labels[status] ?? status}
+    </span>
+  );
+}
