@@ -40,9 +40,13 @@ export async function getConsolidatedOrder(id: string): Promise<ConsolidatedOrde
     seller: order.data.sellerId
       ? {
           id: order.data.sellerId,
+          clerkUserId: order.data.sellerId,
           storeName: order.data.sellerName ?? order.data.sellerId,
+          dni: null,
           ownerName: null,
           email: null,
+          phone: null,
+          active: true,
           status: "unknown",
           productsCount: null,
           createdAt: null,

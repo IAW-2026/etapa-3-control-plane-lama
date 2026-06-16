@@ -11,10 +11,39 @@ import type {
 } from "@/types/domain";
 
 const service = "seller" as const;
+const authAs = "control-plane" as const;
 
 type RawSeller = {
-  vendedor_id: string;
+  vendedor_id?: string;
+  clerk_user_id?: string | null;
   nombre_vendedor: string;
+  dni?: string | null;
+  email?: string | null;
+  telefono?: string | null;
+  activo?: boolean;
+  fecha_creacion?: string | null;
+  fecha_actualizacion?: string | null;
+};
+
+type RawSellerUpdate = {
+  clerk_user_id: string;
+  nombre_vendedor: string;
+  dni: string;
+  email: string;
+  telefono: string;
+  activo: boolean;
+};
+
+export type SellerVendorUpdatePayload = Partial<{
+  nombre_vendedor: string;
+  dni: string;
+  email: string;
+  telefono: string;
+  activo: boolean;
+}>;
+
+export type SellerVendorActionResult = ActionResult & {
+  data?: Seller;
 };
 
 type RawSellersResponse = {
@@ -93,14 +122,21 @@ type RawOrderDetail = {
 };
 
 function mapSeller(raw: RawSeller): Seller {
+  const active = raw.activo !== false;
+  const id = raw.vendedor_id ?? raw.clerk_user_id ?? "-";
+
   return {
-    id: raw.vendedor_id,
+    id,
+    clerkUserId: raw.clerk_user_id ?? id,
     storeName: raw.nombre_vendedor,
+    dni: raw.dni ?? null,
     ownerName: raw.nombre_vendedor,
-    email: null,
-    status: "active",
+    email: raw.email ?? null,
+    phone: raw.telefono ?? null,
+    active,
+    status: active ? "active" : "inactive",
     productsCount: null,
-    createdAt: null,
+    createdAt: raw.fecha_creacion ?? raw.fecha_actualizacion ?? null,
   };
 }
 
@@ -127,6 +163,7 @@ export async function listSellers(query: ListQuery): Promise<ServiceResult<Pagin
   const response = await requestJson<RawSellersResponse>({
     service,
     path: "/api/vendedores",
+    authAs,
     query: {
       search: query.q || undefined,
       page: query.page,
@@ -166,23 +203,57 @@ export async function getSellerById(id: string): Promise<ServiceResult<Seller>> 
   );
 }
 
-export async function setSellerEnabled(id: string, enabled: boolean): Promise<ActionResult> {
-  void id;
-  void enabled;
+export async function updateSellerVendor(
+  clerkUserId: string,
+  payload: SellerVendorUpdatePayload,
+): Promise<SellerVendorActionResult> {
+  const response = await requestJson<RawSellerUpdate>({
+    service,
+    path: `/api/vendedores/${encodeURIComponent(clerkUserId)}`,
+    method: "PATCH",
+    authAs,
+    body: payload,
+  });
 
-  return {
-    success: false,
-    error: {
-      code: "ENDPOINT_NOT_AVAILABLE",
-      message: "Seller App no expone activacion o desactivacion de vendedores en el contrato actual.",
+  return response.error
+    ? { success: false, error: response.error }
+    : { success: true, data: response.data ? mapSeller(response.data) : undefined };
+}
+
+export async function updateSellerVendorStatus(
+  clerkUserId: string,
+  active: boolean,
+): Promise<SellerVendorActionResult> {
+  const response = await requestJson<RawSellerUpdate>({
+    service,
+    path: `/api/vendedores/${encodeURIComponent(clerkUserId)}/estado`,
+    method: "PATCH",
+    authAs,
+    body: {
+      activo: active,
     },
-  };
+  });
+
+  return response.error
+    ? { success: false, error: response.error }
+    : { success: true, data: response.data ? mapSeller(response.data) : undefined };
+}
+
+export async function setSellerEnabled(
+  id: string,
+  clerkUserId: string,
+  enabled: boolean,
+): Promise<ActionResult> {
+  void id;
+
+  return updateSellerVendorStatus(clerkUserId, enabled);
 }
 
 export async function listProducts(query: ListQuery): Promise<ServiceResult<Paginated<Product>>> {
   const response = await requestJson<RawProductsResponse>({
     service,
     path: "/api/productos",
+    authAs,
     query: {
       search: query.q || undefined,
       sort: "recent",
@@ -192,7 +263,10 @@ export async function listProducts(query: ListQuery): Promise<ServiceResult<Pagi
   });
 
   const sellersById = new Map(
-    (response.data?.vendedores ?? []).map((seller) => [seller.vendedor_id, seller.nombre_vendedor]),
+    (response.data?.vendedores ?? []).map((seller) => [
+      seller.vendedor_id ?? seller.clerk_user_id ?? "",
+      seller.nombre_vendedor,
+    ]),
   );
 
   return {
@@ -237,6 +311,7 @@ export async function listOrders(query: ListQuery): Promise<ServiceResult<Pagina
   const response = await requestJson<RawOrdersResponse>({
     service,
     path: "/api/ordenes-ventas",
+    authAs,
     query: {
       page: query.page,
       pageSize: query.pageSize,
@@ -272,6 +347,7 @@ export async function getOrderById(id: string): Promise<ServiceResult<Order>> {
   const response = await requestJson<RawOrderDetail>({
     service,
     path: `/api/ordenes-ventas/${id}`,
+    authAs,
   });
 
   return {

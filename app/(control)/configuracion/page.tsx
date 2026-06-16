@@ -53,7 +53,8 @@ export default async function ConfigurationPage() {
             <h2 className="text-sm font-semibold text-lama-text">Identidad del Control Plane</h2>
           </div>
           <p className="mt-4 text-sm text-lama-muted">
-            CONTROL_PLANE_API_KEY {appConfig.controlPlaneApiKey ? "configurado" : "no configurado"}.
+            INTERNAL_API_KEY / CONTROL_PLANE_API_KEY{" "}
+            {appConfig.controlPlaneApiKey ? "configurado" : "no configurado"}.
           </p>
         </article>
         <article className="rounded-[24px] border border-lama-border bg-lama-surface/95 p-7 shadow-panel">

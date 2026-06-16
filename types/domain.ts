@@ -51,9 +51,13 @@ export type BuyerUser = {
 
 export type Seller = {
   id: string;
+  clerkUserId?: string | null;
   storeName: string;
+  dni?: string | null;
   ownerName?: string | null;
   email?: string | null;
+  phone?: string | null;
+  active: boolean;
   status: string;
   productsCount?: number | null;
   createdAt?: string | null;

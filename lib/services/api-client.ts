@@ -13,6 +13,7 @@ type RequestOptions = {
   query?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   headers?: HeadersInit;
+  authAs?: "service" | "control-plane";
 };
 
 function buildUrl(baseUrl: string, path: string, query?: RequestOptions["query"]) {
@@ -52,8 +53,18 @@ function parseApiError(status: number, payload: string): ServiceError {
   }
 }
 
-function buildAuthHeaders(service: ServiceName) {
+function buildAuthHeaders(service: ServiceName, authAs: "service" | "control-plane" = "service") {
   const headers: Record<string, string> = {};
+
+  if (authAs === "control-plane") {
+    if (appConfig.controlPlaneApiKey) {
+      headers["x-service-name"] = "control-plane";
+      headers["x-api-key"] = appConfig.controlPlaneApiKey;
+    }
+
+    return headers;
+  }
+
   const serviceApiKey = appConfig.apiKeys[service];
 
   if (serviceApiKey) {
@@ -96,6 +107,7 @@ export async function requestJson<T>({
   query,
   body,
   headers,
+  authAs = "service",
 }: RequestOptions): Promise<ServiceResult<T>> {
   const baseUrl = appConfig.services[service];
 
@@ -126,7 +138,7 @@ export async function requestJson<T>({
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        ...buildAuthHeaders(service),
+        ...buildAuthHeaders(service, authAs),
         ...headers,
       },
       ...(body ? { body: JSON.stringify(body) } : {}),

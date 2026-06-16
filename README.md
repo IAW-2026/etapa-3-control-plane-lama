@@ -26,7 +26,7 @@ El Control Plane no reemplaza los paneles admin de Buyer App, Seller App, Shippi
 
 ## Estado segun contrato actual
 
-- `Seller App` permite listar vendedores, productos y ordenes, y ver detalle de orden.
+- `Seller App` permite listar vendedores, editar vendedores, actualizar el estado de un vendedor, listar productos y ordenes, y ver detalle de orden.
 - `Shipping App` permite consultar un envio por orden, pero no listar todos los envios.
 - `Buyer App` permite listar compradores y expone checkout por orden.
 - `Payments App` no expone listado administrativo de pagos ni disputas en el contrato actual.
@@ -35,9 +35,8 @@ Por eso:
 
 - `pagos` usa el estado de pago reportado por Seller App;
 - `envios` se arma a partir de ordenes de Seller App y consultas por orden a Shipping App;
-- `usuarios` muestra compradores reales de Buyer App y vendedores reales de Seller App;
+- `usuarios` muestra compradores reales de Buyer App y vendedores reales de Seller App, y permite editar, activar o desactivar vendedores;
 - `disputas` queda bloqueado hasta que Payments publique ese endpoint;
-- no se ofrece activar o desactivar vendedores porque ese endpoint no existe en el contrato recibido.
 
 ## Variables de entorno
 
@@ -61,11 +60,12 @@ PAYMENTS_API_URL=
 PAYMENTS_APP_URL=
 PAYMENTS_API_KEY=
 
+INTERNAL_API_KEY=
 CONTROL_PLANE_API_KEY=
 API_REQUEST_TIMEOUT_MS=8000
 ```
 
-Las llamadas internas envian `x-service-name` con el servicio destino (`buyer`, `seller`, `shipping` o `payments`) y `x-api-key` con la variable `*_API_KEY` correspondiente. `CONTROL_PLANE_API_KEY` queda como fallback si no existe una clave especifica para el servicio.
+Las llamadas internas envian `x-service-name` con el servicio destino (`buyer`, `seller`, `shipping` o `payments`) y `x-api-key` con la variable `*_API_KEY` correspondiente. `INTERNAL_API_KEY` identifica al Control Plane para acciones internas; `CONTROL_PLANE_API_KEY` queda como fallback de compatibilidad. La edicion y actualizacion de estado de vendedores se invoca con identidad `control-plane`.
 
 ## Rol requerido
 
@@ -91,6 +91,6 @@ Abrir `http://localhost:3000`.
 ## Contratos de API usados
 
 - Buyer App: `GET /api/compradores`, `GET /api/ordenes/{orden_id}/checkout`
-- Seller App: `GET /api/vendedores`, `GET /api/productos`, `GET /api/ordenes-ventas`, `GET /api/ordenes-ventas/{orden_id}`
+- Seller App: `GET /api/vendedores`, `PATCH /api/vendedores/{clerk_user_id}`, `PATCH /api/vendedores/{clerk_user_id}/estado`, `GET /api/productos`, `GET /api/ordenes-ventas`, `GET /api/ordenes-ventas/{orden_id}`
 - Shipping App: `GET /api/envios/orden/{orden_id}`
 - Payments App: sin endpoints administrativos de listado en el contrato actual
