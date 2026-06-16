@@ -6,7 +6,7 @@ export default async function ControlLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await requireSuperAdmin();
+  await requireSuperAdmin();
 
-  return <AppShell user={user}>{children}</AppShell>;
+  return <AppShell>{children}</AppShell>;
 }

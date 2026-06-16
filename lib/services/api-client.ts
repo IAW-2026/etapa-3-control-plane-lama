@@ -52,8 +52,15 @@ function parseApiError(status: number, payload: string): ServiceError {
   }
 }
 
-function buildAuthHeaders() {
+function buildAuthHeaders(service: ServiceName) {
   const headers: Record<string, string> = {};
+  const serviceApiKey = appConfig.apiKeys[service];
+
+  if (serviceApiKey) {
+    headers["x-service-name"] = service;
+    headers["x-api-key"] = serviceApiKey;
+    return headers;
+  }
 
   if (appConfig.controlPlaneApiKey) {
     headers["x-service-name"] = "control-plane";
@@ -119,7 +126,7 @@ export async function requestJson<T>({
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        ...buildAuthHeaders(),
+        ...buildAuthHeaders(service),
         ...headers,
       },
       ...(body ? { body: JSON.stringify(body) } : {}),

@@ -10,18 +10,18 @@ type StatCardProps = {
 
 export function StatCard({ title, value, icon, helper }: StatCardProps) {
   return (
-    <article className="group min-h-[210px] rounded-[24px] border border-lama-border bg-lama-surface/95 p-7 shadow-panel transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(55,65,61,0.11)]">
-      <div className="flex items-start justify-between gap-6">
+    <article className="group relative min-h-[210px] overflow-hidden rounded-[24px] border border-lama-border bg-lama-surface/95 p-7 shadow-panel transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(55,65,61,0.11)]">
+      <div className="absolute right-7 top-7 flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-lama-primary/10 text-lama-primary transition group-hover:bg-lama-primary/15">
+        {icon}
+      </div>
+      <div className="pr-16">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.34em] text-lama-primary">
+          <p className="text-[11px] font-black uppercase tracking-[0.26em] text-lama-primary sm:text-xs sm:tracking-[0.3em]">
             {title}
           </p>
           <p className="mt-5 text-5xl font-black leading-none text-lama-text">
             {formatNumber(value)}
           </p>
-        </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-lama-primary/10 text-lama-primary transition group-hover:bg-lama-primary/15">
-          {icon}
         </div>
       </div>
       {helper ? (

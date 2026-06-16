@@ -34,7 +34,7 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function Topbar({ displayName }: { displayName: string }) {
+export function Topbar() {
   const pathname = usePathname();
 
   return (
@@ -62,9 +62,6 @@ export function Topbar({ displayName }: { displayName: string }) {
           >
             Configuracion
           </Link>
-          <span className="hidden max-w-[220px] truncate text-sm font-medium text-white/80 sm:inline">
-            {displayName}
-          </span>
           <UserButton afterSignOutUrl="/sign-in" />
         </div>
       </div>

@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   const integrations = [
     { label: "Seller", status: "Sincronizado", tone: "ok" },
     { label: "Shipping", status: "Por orden", tone: "ok" },
-    { label: "Buyer", status: "Parcial", tone: "soft" },
+    { label: "Buyer", status: "Sincronizado", tone: "ok" },
     { label: "Payments", status: "Derivado", tone: "soft" },
   ];
 
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
         <StatCard
           title="Compradores"
           value={stats.buyers}
-          helper="Fuente parcial"
+          helper="Buyer App"
           icon={<UserRound className="h-6 w-6" aria-hidden />}
         />
         <StatCard

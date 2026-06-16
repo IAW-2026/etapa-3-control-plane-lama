@@ -28,14 +28,14 @@ El Control Plane no reemplaza los paneles admin de Buyer App, Seller App, Shippi
 
 - `Seller App` permite listar vendedores, productos y ordenes, y ver detalle de orden.
 - `Shipping App` permite consultar un envio por orden, pero no listar todos los envios.
-- `Buyer App` expone checkout por orden, pero no un listado global de compradores.
+- `Buyer App` permite listar compradores y expone checkout por orden.
 - `Payments App` no expone listado administrativo de pagos ni disputas en el contrato actual.
 
 Por eso:
 
 - `pagos` usa el estado de pago reportado por Seller App;
 - `envios` se arma a partir de ordenes de Seller App y consultas por orden a Shipping App;
-- `usuarios` muestra vendedores reales y no simula compradores;
+- `usuarios` muestra compradores reales de Buyer App y vendedores reales de Seller App;
 - `disputas` queda bloqueado hasta que Payments publique ese endpoint;
 - no se ofrece activar o desactivar vendedores porque ese endpoint no existe en el contrato recibido.
 
@@ -65,6 +65,8 @@ CONTROL_PLANE_API_KEY=
 API_REQUEST_TIMEOUT_MS=8000
 ```
 
+Las llamadas internas envian `x-service-name` con el servicio destino (`buyer`, `seller`, `shipping` o `payments`) y `x-api-key` con la variable `*_API_KEY` correspondiente. `CONTROL_PLANE_API_KEY` queda como fallback si no existe una clave especifica para el servicio.
+
 ## Rol requerido
 
 El usuario de Clerk debe tener el rol `super_admin` en metadata o claims. La app revisa estas ubicaciones:
@@ -88,7 +90,7 @@ Abrir `http://localhost:3000`.
 
 ## Contratos de API usados
 
-- Buyer App: `GET /api/ordenes/{orden_id}/checkout`
+- Buyer App: `GET /api/compradores`, `GET /api/ordenes/{orden_id}/checkout`
 - Seller App: `GET /api/vendedores`, `GET /api/productos`, `GET /api/ordenes-ventas`, `GET /api/ordenes-ventas/{orden_id}`
 - Shipping App: `GET /api/envios/orden/{orden_id}`
 - Payments App: sin endpoints administrativos de listado en el contrato actual
