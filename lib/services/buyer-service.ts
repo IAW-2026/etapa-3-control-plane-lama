@@ -6,6 +6,7 @@ import type { BuyerUser, OrderCheckout, Paginated, ServiceResult } from "@/types
 const service = "buyer" as const;
 
 type RawBuyer = {
+  clerk_user_id_comprador?: string;
   comprador_id?: string;
   compradorId?: string;
   buyer_id?: string;
@@ -39,7 +40,14 @@ type RawBuyersResponse =
     };
 
 function mapBuyer(raw: RawBuyer): BuyerUser {
-  const id = raw.comprador_id ?? raw.compradorId ?? raw.buyer_id ?? raw.id ?? raw.email ?? "-";
+  const id =
+    raw.clerk_user_id_comprador ??
+    raw.comprador_id ??
+    raw.compradorId ??
+    raw.buyer_id ??
+    raw.id ??
+    raw.email ??
+    "-";
   const email = raw.email ?? raw.correo ?? "";
   const name = raw.nombre ?? raw.nombre_comprador ?? raw.name ?? email;
 
