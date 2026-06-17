@@ -1,9 +1,16 @@
 import "server-only";
 import { type ListQuery } from "@/lib/pagination";
 import { requestJson, toPaginated } from "@/lib/services/api-client";
-import type { BuyerUser, OrderCheckout, Paginated, ServiceResult } from "@/types/domain";
+import type {
+  ActionResult,
+  BuyerUser,
+  OrderCheckout,
+  Paginated,
+  ServiceResult,
+} from "@/types/domain";
 
 const service = "buyer" as const;
+const authAs = "control-plane" as const;
 
 type RawBuyer = {
   clerk_user_id_comprador?: string;
@@ -16,6 +23,7 @@ type RawBuyer = {
   name?: string;
   email?: string;
   correo?: string;
+  activo?: boolean;
   estado?: string;
   status?: string;
   fecha_creacion?: string;
@@ -23,6 +31,10 @@ type RawBuyer = {
   ordenes_count?: number;
   ordersCount?: number;
   total_ordenes?: number;
+};
+
+export type BuyerStatusActionResult = ActionResult & {
+  data?: BuyerUser;
 };
 
 type RawBuyersResponse =
@@ -50,12 +62,14 @@ function mapBuyer(raw: RawBuyer): BuyerUser {
     "-";
   const email = raw.email ?? raw.correo ?? "";
   const name = raw.nombre ?? raw.nombre_comprador ?? raw.name ?? email;
+  const status = raw.estado ?? raw.status ?? (raw.activo === false ? "inactive" : "active");
 
   return {
     id,
+    clerkUserId: raw.clerk_user_id_comprador ?? null,
     name: name || id,
     email,
-    status: raw.estado ?? raw.status ?? "active",
+    status,
     createdAt: raw.fecha_creacion ?? raw.createdAt ?? null,
     ordersCount: raw.ordenes_count ?? raw.ordersCount ?? raw.total_ordenes ?? 0,
   };
@@ -96,6 +110,25 @@ export async function listBuyers(
       items: paginated.items.map(mapBuyer),
     },
   };
+}
+
+export async function updateBuyerStatus(
+  clerkUserId: string,
+  active: boolean,
+): Promise<BuyerStatusActionResult> {
+  const response = await requestJson<RawBuyer>({
+    service,
+    path: `/api/compradores/${encodeURIComponent(clerkUserId)}/estado`,
+    method: "PATCH",
+    authAs,
+    body: {
+      activo: active,
+    },
+  });
+
+  return response.error
+    ? { success: false, error: response.error }
+    : { success: true, data: response.data ? mapBuyer(response.data) : undefined };
 }
 
 type RawCheckoutResponse = {

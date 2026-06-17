@@ -42,6 +42,7 @@ export type DashboardStats = {
 
 export type BuyerUser = {
   id: string;
+  clerkUserId?: string | null;
   name: string;
   email: string;
   status?: string | null;

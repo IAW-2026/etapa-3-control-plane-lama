@@ -90,7 +90,9 @@ Abrir `http://localhost:3000`.
 
 ## Contratos de API usados
 
-- Buyer App: `GET /api/compradores`, `GET /api/ordenes/{orden_id}/checkout`
+- Buyer App: `GET /api/compradores`, `PATCH /api/compradores/{clerk_user_id_comprador}/estado`, `GET /api/ordenes/{orden_id}/checkout`
 - Seller App: `GET /api/vendedores`, `PATCH /api/vendedores/{clerk_user_id}`, `PATCH /api/vendedores/{clerk_user_id}/estado`, `GET /api/productos`, `GET /api/ordenes-ventas`, `GET /api/ordenes-ventas/{orden_id}`
 - Shipping App: `GET /api/envios/orden/{orden_id}`
 - Payments App: sin endpoints administrativos de listado en el contrato actual
+
+El `PATCH /api/compradores/{clerk_user_id_comprador}/estado` recibe `{ "activo": true | false }`.

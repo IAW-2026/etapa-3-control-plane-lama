@@ -3,11 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireSuperAdmin } from "@/lib/auth";
+import { updateBuyerStatus } from "@/lib/services/buyer-service";
 import {
   updateSellerVendor,
   updateSellerVendorStatus,
   type SellerVendorUpdatePayload,
 } from "@/lib/services/seller-service";
+
+export type BuyerStatusData = {
+  clerkUserId: string;
+  name: string;
+  active: boolean;
+};
 
 export type SellerEditorData = {
   clerkUserId: string;
@@ -103,6 +110,45 @@ export async function updateSellerStatusAction(formData: FormData) {
       returnTo,
       "success",
       enabled ? "Vendedor activado correctamente." : "Vendedor desactivado correctamente.",
+    ),
+  );
+}
+
+export async function updateBuyerStatusAction(formData: FormData) {
+  await requireSuperAdmin();
+
+  const clerkUserId = formString(formData, "clerk_user_id_comprador");
+  const returnTo = formString(formData, "return_to") || "/usuarios";
+  const enabled = formString(formData, "activo") === "true";
+
+  if (!clerkUserId) {
+    redirect(
+      usersRedirect(
+        returnTo,
+        "error",
+        "No se pudo actualizar el comprador porque faltan datos de identificacion.",
+      ),
+    );
+  }
+
+  const result = await updateBuyerStatus(clerkUserId, enabled);
+
+  if (!result.success) {
+    redirect(
+      usersRedirect(
+        returnTo,
+        "error",
+        result.error?.message ?? "No se pudo actualizar el estado del comprador.",
+      ),
+    );
+  }
+
+  revalidatePath("/usuarios");
+  redirect(
+    usersRedirect(
+      returnTo,
+      "success",
+      enabled ? "Comprador activado correctamente." : "Comprador desactivado correctamente.",
     ),
   );
 }

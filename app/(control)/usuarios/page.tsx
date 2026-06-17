@@ -7,6 +7,7 @@ import { parseListQuery, toQueryObject, type SearchParams } from "@/lib/paginati
 import { listBuyers } from "@/lib/services/buyer-service";
 import { listSellers } from "@/lib/services/seller-service";
 import { formatDate } from "@/lib/utils";
+import { BuyerActions } from "./BuyerActions";
 import { SellerActions } from "./SellerActions";
 import { UserFeedbackPopup } from "./UserFeedbackPopup";
 
@@ -29,9 +30,16 @@ function firstParam(value: string | string[] | undefined) {
 }
 
 function isActiveStatus(status: string) {
-  return !["inactive", "inactiva", "disabled", "deshabilitado", "deshabilitada"].includes(
-    status.toLowerCase(),
-  );
+  return ![
+    "inactive",
+    "inactiva",
+    "inactivo",
+    "disabled",
+    "deshabilitado",
+    "deshabilitada",
+    "desactivado",
+    "desactivada",
+  ].includes(status.toLowerCase());
 }
 
 function buildReturnPath(params: SearchParams) {
@@ -64,6 +72,14 @@ function toSellerEditorData(row: UserRow) {
   };
 }
 
+function toBuyerStatusData(row: UserRow) {
+  return {
+    clerkUserId: row.clerkUserId ?? "",
+    name: row.name,
+    active: row.isActive,
+  };
+}
+
 export default async function UsersPage({
   searchParams,
 }: {
@@ -80,6 +96,7 @@ export default async function UsersPage({
   const buyerRows: UserRow[] =
     buyers.data?.items.map((buyer) => ({
       id: buyer.id,
+      clerkUserId: buyer.clerkUserId,
       name: buyer.name,
       email: buyer.email || "-",
       status: buyer.status ?? "active",
@@ -156,8 +173,8 @@ export default async function UsersPage({
       key: "actions",
       header: "Acciones",
       cell: (row) => {
-        if (row.type !== "Vendedor") {
-          return <span className="text-xs font-semibold text-lama-muted">-</span>;
+        if (row.type === "Comprador") {
+          return <BuyerActions buyer={toBuyerStatusData(row)} returnTo={returnTo} />;
         }
 
         return <SellerActions seller={toSellerEditorData(row)} returnTo={returnTo} />;

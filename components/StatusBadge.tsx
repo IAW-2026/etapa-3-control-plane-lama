@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 
 const styles: Record<string, string> = {
   active: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  activo: "border-emerald-200 bg-emerald-50 text-emerald-700",
   activa: "border-emerald-200 bg-emerald-50 text-emerald-700",
   approved: "border-emerald-200 bg-emerald-50 text-emerald-700",
   delivered: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -25,7 +26,10 @@ const styles: Record<string, string> = {
   paused: "border-slate-200 bg-slate-50 text-slate-700",
   draft: "border-slate-200 bg-slate-50 text-slate-700",
   inactive: "border-slate-200 bg-slate-50 text-slate-700",
+  inactivo: "border-slate-200 bg-slate-50 text-slate-700",
   inactiva: "border-slate-200 bg-slate-50 text-slate-700",
+  desactivado: "border-slate-200 bg-slate-50 text-slate-700",
+  desactivada: "border-slate-200 bg-slate-50 text-slate-700",
   unknown: "border-slate-200 bg-slate-50 text-slate-700",
   open: "border-red-200 bg-red-50 text-red-700",
   blocked: "border-red-200 bg-red-50 text-red-700",
@@ -43,6 +47,7 @@ const styles: Record<string, string> = {
 
 const labels: Record<string, string> = {
   active: "Activo",
+  activo: "Activo",
   activa: "Activa",
   approved: "Aprobado",
   aprobado: "Aprobado",
@@ -66,7 +71,10 @@ const labels: Record<string, string> = {
   paused: "Pausado",
   draft: "Borrador",
   inactive: "Inactivo",
+  inactivo: "Inactivo",
   inactiva: "Inactiva",
+  desactivado: "Desactivado",
+  desactivada: "Desactivada",
   unknown: "No disponible",
   open: "Abierta",
   blocked: "Bloqueado",
