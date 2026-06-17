@@ -9,7 +9,6 @@ import {
   type SellerEditorData,
   type SellerEditorState,
 } from "./actions";
-import { readCachedSeller, writeCachedSeller } from "./seller-client-state";
 
 type SellerActionsProps = {
   seller: SellerEditorData | null;
@@ -26,21 +25,13 @@ function buildFeedbackHref(
   returnTo: string,
   status: "success" | "error",
   message: string,
-  seller?: SellerEditorData,
 ) {
   const url = new URL(returnTo, window.location.origin);
 
   url.searchParams.delete("sellerStatus");
   url.searchParams.delete("sellerStatusMessage");
-  url.searchParams.delete("updatedSellerId");
-  url.searchParams.delete("updatedSellerActive");
   url.searchParams.set("sellerStatus", status);
   url.searchParams.set("sellerStatusMessage", message);
-
-  if (seller) {
-    url.searchParams.set("updatedSellerId", seller.clerkUserId);
-    url.searchParams.set("updatedSellerActive", String(seller.active));
-  }
 
   return `${url.pathname}${url.search}`;
 }
@@ -91,10 +82,8 @@ export function SellerActions({ seller, returnTo }: SellerActionsProps) {
       return;
     }
 
-    const cached = readCachedSeller(seller.clerkUserId);
-    const nextSeller = cached ?? seller;
-    setCurrentSeller(nextSeller);
-    setDraft(nextSeller);
+    setCurrentSeller(seller);
+    setDraft(seller);
   }, [seller]);
 
   useEffect(() => {
@@ -109,12 +98,11 @@ export function SellerActions({ seller, returnTo }: SellerActionsProps) {
     if (state.seller) {
       setCurrentSeller(state.seller);
       setDraft(state.seller);
-      writeCachedSeller(state.seller);
     }
 
     setHandledSubmission(state.submittedAt);
     setEditOpen(false);
-    router.replace(buildFeedbackHref(returnTo, "success", state.message, state.seller), {
+    router.replace(buildFeedbackHref(returnTo, "success", state.message), {
       scroll: false,
     });
     router.refresh();

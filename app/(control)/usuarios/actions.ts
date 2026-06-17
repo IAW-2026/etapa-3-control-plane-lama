@@ -34,22 +34,14 @@ function usersRedirect(
   returnTo: string,
   status: "success" | "error",
   message: string,
-  seller?: Pick<SellerEditorData, "clerkUserId" | "active">,
 ) {
   const safeReturnTo = returnTo.startsWith("/usuarios") ? returnTo : "/usuarios";
   const url = new URL(safeReturnTo, "http://control-plane.local");
 
   url.searchParams.delete("sellerStatus");
   url.searchParams.delete("sellerStatusMessage");
-  url.searchParams.delete("updatedSellerId");
-  url.searchParams.delete("updatedSellerActive");
   url.searchParams.set("sellerStatus", status);
   url.searchParams.set("sellerStatusMessage", message);
-
-  if (seller) {
-    url.searchParams.set("updatedSellerId", seller.clerkUserId);
-    url.searchParams.set("updatedSellerActive", String(seller.active));
-  }
 
   return `${url.pathname}${url.search}`;
 }
@@ -111,10 +103,6 @@ export async function updateSellerStatusAction(formData: FormData) {
       returnTo,
       "success",
       enabled ? "Vendedor activado correctamente." : "Vendedor desactivado correctamente.",
-      {
-        clerkUserId,
-        active: result.data?.active ?? enabled,
-      },
     ),
   );
 }
