@@ -67,6 +67,7 @@ export type Product = {
   id: string;
   title: string;
   sellerId: string;
+  sellerIds?: string[];
   sellerName?: string | null;
   categoryId?: string | null;
   description?: string | null;

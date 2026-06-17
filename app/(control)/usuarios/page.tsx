@@ -1,7 +1,7 @@
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
+import { FilterPanel } from "@/components/FilterPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
-import { SearchInput } from "@/components/SearchInput";
 import { StatusBadge } from "@/components/StatusBadge";
 import { parseListQuery, toQueryObject, type SearchParams } from "@/lib/pagination";
 import { listBuyers } from "@/lib/services/buyer-service";
@@ -75,6 +75,7 @@ export default async function UsersPage({
   const paginationQuery = buildCleanQuery(params);
   const sellerStatus = firstParam(params.sellerStatus);
   const sellerStatusMessage = firstParam(params.sellerStatusMessage);
+  const selectedStatus = firstParam(params.estado) ?? "";
   const [buyers, sellers] = await Promise.all([listBuyers(query), listSellers(query)]);
   const buyerRows: UserRow[] =
     buyers.data?.items.map((buyer) => ({
@@ -101,7 +102,13 @@ export default async function UsersPage({
       type: "Vendedor",
       createdAt: seller.createdAt,
     })) ?? [];
-  const rows = [...buyerRows, ...sellerRows];
+  const rows = [...buyerRows, ...sellerRows].filter((row) => {
+    if (!selectedStatus) {
+      return true;
+    }
+
+    return selectedStatus === "active" ? row.isActive : !row.isActive;
+  });
   const partialErrors = [
     buyers.error ? `Buyer App: ${buyers.error.message}` : null,
     sellers.error ? `Seller App: ${sellers.error.message}` : null,
@@ -163,7 +170,31 @@ export default async function UsersPage({
       <PageHeader
         title="Usuarios"
         description="Compradores y vendedores reales expuestos por Buyer App y Seller App."
-        actions={<SearchInput placeholder="Buscar usuario" defaultValue={query.q} />}
+      />
+      <FilterPanel
+        clearHref="/usuarios"
+        fields={[
+          {
+            type: "search",
+            name: "q",
+            label: "Busqueda",
+            placeholder: "Buscar por nombre o email",
+            defaultValue: query.q,
+            className: "lg:col-span-7",
+          },
+          {
+            type: "select",
+            name: "estado",
+            label: "Estado",
+            defaultValue: selectedStatus,
+            className: "lg:col-span-3",
+            options: [
+              { label: "Todos", value: "" },
+              { label: "Activos", value: "active" },
+              { label: "Inactivos", value: "inactive" },
+            ],
+          },
+        ]}
       />
       <UserFeedbackPopup status={sellerStatus} message={sellerStatusMessage} />
       {partialErrors.length > 0 && rows.length > 0 ? (

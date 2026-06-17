@@ -56,6 +56,7 @@ type RawSellersResponse = {
 type RawProduct = {
   producto_id: string;
   vendedor_id: string;
+  clerk_user_id?: string;
   categoria_id: string;
   imagenes?: string[];
   titulo: string;
@@ -256,41 +257,58 @@ export async function listProducts(query: ListQuery): Promise<ServiceResult<Pagi
     authAs,
     query: {
       search: query.q || undefined,
+      include_all_statuses: true,
       sort: "recent",
       page: query.page,
       pageSize: query.pageSize,
     },
   });
 
-  const sellersById = new Map(
-    (response.data?.vendedores ?? []).map((seller) => [
-      seller.vendedor_id ?? seller.clerk_user_id ?? "",
-      seller.nombre_vendedor,
-    ]),
-  );
+  const sellersById = new Map<string, string>();
+
+  (response.data?.vendedores ?? []).forEach((seller) => {
+    if (seller.vendedor_id) {
+      sellersById.set(seller.vendedor_id, seller.nombre_vendedor);
+    }
+
+    if (seller.clerk_user_id) {
+      sellersById.set(seller.clerk_user_id, seller.nombre_vendedor);
+    }
+  });
 
   return {
     ...response,
     data: response.data
       ? toPaginated<Product>(
           {
-            items: response.data.items.map((product) => ({
-              id: product.producto_id,
-              sellerId: product.vendedor_id,
-              sellerName: sellersById.get(product.vendedor_id) ?? null,
-              categoryId: product.categoria_id,
-              title: product.titulo,
-              description: product.descripcion,
-              imageUrl: product.imagenes?.[0] ?? null,
-              brand: product.marca,
-              size: product.talle,
-              gender: product.genero,
-              condition: product.estado_prenda,
-              status: product.estado_publicacion,
-              price: product.precio,
-              stock: null,
-              createdAt: product.fecha_creacion,
-            })),
+            items: response.data.items.map((product) => {
+              const sellerIds = Array.from(
+                new Set(
+                  [product.clerk_user_id, product.vendedor_id].filter(
+                    (sellerId): sellerId is string => Boolean(sellerId),
+                  ),
+                ),
+              );
+
+              return {
+                id: product.producto_id,
+                sellerId: sellerIds[0] ?? product.vendedor_id,
+                sellerIds,
+                sellerName: sellerIds.map((id) => sellersById.get(id)).find(Boolean) ?? null,
+                categoryId: product.categoria_id,
+                title: product.titulo,
+                description: product.descripcion,
+                imageUrl: product.imagenes?.[0] ?? null,
+                brand: product.marca,
+                size: product.talle,
+                gender: product.genero,
+                condition: product.estado_prenda,
+                status: product.estado_publicacion,
+                price: product.precio,
+                stock: null,
+                createdAt: product.fecha_creacion,
+              };
+            }),
             total: response.data.total,
             page: response.data.page,
             pageSize: response.data.pageSize,
@@ -313,6 +331,7 @@ export async function listOrders(query: ListQuery): Promise<ServiceResult<Pagina
     path: "/api/ordenes-ventas",
     authAs,
     query: {
+      search: query.q || undefined,
       page: query.page,
       pageSize: query.pageSize,
     },
@@ -320,9 +339,6 @@ export async function listOrders(query: ListQuery): Promise<ServiceResult<Pagina
 
   return {
     ...response,
-    warning: query.q
-      ? "La busqueda textual de ordenes no esta soportada por Seller App y fue ignorada."
-      : response.warning,
     data: response.data
       ? toPaginated<Order>(
           {
