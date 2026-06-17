@@ -18,6 +18,7 @@ type UserRow = {
   dni?: string | null;
   email: string;
   phone?: string | null;
+  address?: string | null;
   status: string;
   isActive: boolean;
   metric: string;
@@ -72,10 +73,13 @@ function toSellerEditorData(row: UserRow) {
   };
 }
 
-function toBuyerStatusData(row: UserRow) {
+function toBuyerEditorData(row: UserRow) {
   return {
     clerkUserId: row.clerkUserId ?? "",
     name: row.name,
+    email: row.email === "-" ? "" : row.email,
+    phone: row.phone ?? "",
+    address: row.address ?? "",
     active: row.isActive,
   };
 }
@@ -99,6 +103,8 @@ export default async function UsersPage({
       clerkUserId: buyer.clerkUserId,
       name: buyer.name,
       email: buyer.email || "-",
+      phone: buyer.phone,
+      address: buyer.address,
       status: buyer.status ?? "active",
       isActive: isActiveStatus(buyer.status ?? "active"),
       metric: buyer.ordersCount > 0 ? `${buyer.ordersCount} ordenes` : "Buyer App",
@@ -174,7 +180,7 @@ export default async function UsersPage({
       header: "Acciones",
       cell: (row) => {
         if (row.type === "Comprador") {
-          return <BuyerActions buyer={toBuyerStatusData(row)} returnTo={returnTo} />;
+          return <BuyerActions buyer={toBuyerEditorData(row)} returnTo={returnTo} />;
         }
 
         return <SellerActions seller={toSellerEditorData(row)} returnTo={returnTo} />;

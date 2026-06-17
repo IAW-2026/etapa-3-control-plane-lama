@@ -23,6 +23,11 @@ type RawBuyer = {
   name?: string;
   email?: string;
   correo?: string;
+  telefono?: string | null;
+  phone?: string | null;
+  direccion_envio?: string | null;
+  direccion?: string | null;
+  address?: string | null;
   activo?: boolean;
   esta_activo?: boolean;
   estado?: string;
@@ -35,6 +40,17 @@ type RawBuyer = {
 };
 
 export type BuyerStatusActionResult = ActionResult & {
+  data?: BuyerUser;
+};
+
+export type BuyerUpdatePayload = {
+  nombre_comprador: string;
+  email: string;
+  telefono: string;
+  direccion_envio: string;
+};
+
+export type BuyerUpdateActionResult = ActionResult & {
   data?: BuyerUser;
 };
 
@@ -63,6 +79,8 @@ function mapBuyer(raw: RawBuyer): BuyerUser {
     "-";
   const email = raw.email ?? raw.correo ?? "";
   const name = raw.nombre ?? raw.nombre_comprador ?? raw.name ?? email;
+  const phone = raw.telefono ?? raw.phone ?? null;
+  const address = raw.direccion_envio ?? raw.direccion ?? raw.address ?? null;
   const active = raw.activo ?? raw.esta_activo;
   const status = raw.estado ?? raw.status ?? (active === false ? "inactive" : "active");
 
@@ -71,6 +89,8 @@ function mapBuyer(raw: RawBuyer): BuyerUser {
     clerkUserId: raw.clerk_user_id_comprador ?? null,
     name: name || id,
     email,
+    phone,
+    address,
     status,
     createdAt: raw.fecha_creacion ?? raw.createdAt ?? null,
     ordersCount: raw.ordenes_count ?? raw.ordersCount ?? raw.total_ordenes ?? 0,
@@ -113,6 +133,23 @@ export async function listBuyers(
       items: paginated.items.map(mapBuyer),
     },
   };
+}
+
+export async function updateBuyer(
+  clerkUserId: string,
+  payload: BuyerUpdatePayload,
+): Promise<BuyerUpdateActionResult> {
+  const response = await requestJson<RawBuyer>({
+    service,
+    path: `/api/compradores/${encodeURIComponent(clerkUserId)}`,
+    method: "PATCH",
+    authAs,
+    body: payload,
+  });
+
+  return response.error
+    ? { success: false, error: response.error }
+    : { success: true, data: response.data ? mapBuyer(response.data) : undefined };
 }
 
 export async function updateBuyerStatus(

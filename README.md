@@ -28,14 +28,14 @@ El Control Plane no reemplaza los paneles admin de Buyer App, Seller App, Shippi
 
 - `Seller App` permite listar vendedores, editar vendedores, actualizar el estado de un vendedor, listar productos y ordenes, y ver detalle de orden.
 - `Shipping App` permite consultar un envio por orden, pero no listar todos los envios.
-- `Buyer App` permite listar compradores y expone checkout por orden.
+- `Buyer App` permite listar compradores, editar compradores, actualizar el estado de un comprador y expone checkout por orden.
 - `Payments App` no expone listado administrativo de pagos ni disputas en el contrato actual.
 
 Por eso:
 
 - `pagos` usa el estado de pago reportado por Seller App;
 - `envios` se arma a partir de ordenes de Seller App y consultas por orden a Shipping App;
-- `usuarios` muestra compradores reales de Buyer App y vendedores reales de Seller App, y permite editar, activar o desactivar vendedores;
+- `usuarios` muestra compradores reales de Buyer App y vendedores reales de Seller App, y permite editar, activar o desactivar compradores y vendedores;
 - `disputas` queda bloqueado hasta que Payments publique ese endpoint;
 
 ## Variables de entorno
@@ -90,9 +90,10 @@ Abrir `http://localhost:3000`.
 
 ## Contratos de API usados
 
-- Buyer App: `GET /api/compradores`, `PATCH /api/compradores/{clerk_user_id_comprador}/estado`, `GET /api/ordenes/{orden_id}/checkout`
+- Buyer App: `GET /api/compradores`, `PATCH /api/compradores/{clerk_user_id_comprador}`, `PATCH /api/compradores/{clerk_user_id_comprador}/estado`, `GET /api/ordenes/{orden_id}/checkout`
 - Seller App: `GET /api/vendedores`, `PATCH /api/vendedores/{clerk_user_id}`, `PATCH /api/vendedores/{clerk_user_id}/estado`, `GET /api/productos`, `GET /api/ordenes-ventas`, `GET /api/ordenes-ventas/{orden_id}`
 - Shipping App: `GET /api/envios/orden/{orden_id}`
 - Payments App: sin endpoints administrativos de listado en el contrato actual
 
+El `PATCH /api/compradores/{clerk_user_id_comprador}` recibe `{ "nombre_comprador": string, "email": string, "telefono": string, "direccion_envio": string }`.
 El `PATCH /api/compradores/{clerk_user_id_comprador}/estado` recibe `{ "activo": true | false }`.

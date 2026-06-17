@@ -45,6 +45,8 @@ export type BuyerUser = {
   clerkUserId?: string | null;
   name: string;
   email: string;
+  phone?: string | null;
+  address?: string | null;
   status?: string | null;
   createdAt?: string | null;
   ordersCount: number;
