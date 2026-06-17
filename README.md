@@ -65,7 +65,7 @@ CONTROL_PLANE_API_KEY=
 API_REQUEST_TIMEOUT_MS=8000
 ```
 
-Las llamadas internas envian `x-service-name` con el servicio destino (`buyer`, `seller`, `shipping` o `payments`) y `x-api-key` con la variable `*_API_KEY` correspondiente. `INTERNAL_API_KEY` identifica al Control Plane para acciones internas; `CONTROL_PLANE_API_KEY` queda como fallback de compatibilidad. La edicion y actualizacion de estado de vendedores se invoca con identidad `control-plane`.
+Las llamadas administrativas internas envian `x-service-name: control-plane` y `x-api-key` con `INTERNAL_API_KEY`; `CONTROL_PLANE_API_KEY` queda como fallback de compatibilidad. Si un servicio requiere una key propia, el cliente tambien soporta `*_API_KEY`.
 
 ## Rol requerido
 

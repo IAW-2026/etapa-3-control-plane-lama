@@ -24,6 +24,7 @@ type RawBuyer = {
   email?: string;
   correo?: string;
   activo?: boolean;
+  esta_activo?: boolean;
   estado?: string;
   status?: string;
   fecha_creacion?: string;
@@ -62,7 +63,8 @@ function mapBuyer(raw: RawBuyer): BuyerUser {
     "-";
   const email = raw.email ?? raw.correo ?? "";
   const name = raw.nombre ?? raw.nombre_comprador ?? raw.name ?? email;
-  const status = raw.estado ?? raw.status ?? (raw.activo === false ? "inactive" : "active");
+  const active = raw.activo ?? raw.esta_activo;
+  const status = raw.estado ?? raw.status ?? (active === false ? "inactive" : "active");
 
   return {
     id,
@@ -81,6 +83,7 @@ export async function listBuyers(
   const response = await requestJson<RawBuyersResponse>({
     service,
     path: "/api/compradores",
+    authAs,
     query: {
       search: query.q || undefined,
       page: query.page,
@@ -148,6 +151,7 @@ export async function getCheckoutByOrderId(orderId: string): Promise<ServiceResu
   const response = await requestJson<RawCheckoutResponse>({
     service,
     path: `/api/ordenes/${orderId}/checkout`,
+    authAs,
   });
 
   return {
