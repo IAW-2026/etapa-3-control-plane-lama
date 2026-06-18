@@ -143,41 +143,59 @@ export default async function UsersPage({
     {
       key: "name",
       header: "Usuario",
+      widthClassName: "w-[190px]",
       cell: (row) => (
-        <div>
-          <p className="font-medium">{row.name}</p>
-          <p className="mt-1 text-xs text-lama-muted">{row.email}</p>
+        <div className="min-w-0">
+          <p className="truncate font-medium" title={row.name}>
+            {row.name}
+          </p>
+          <p className="mt-1 truncate text-xs text-lama-muted" title={row.email}>
+            {row.email}
+          </p>
         </div>
       ),
     },
     {
       key: "type",
       header: "Tipo",
+      widthClassName: "w-[78px]",
       cell: (row) => row.type,
     },
     {
       key: "status",
       header: "Estado",
+      widthClassName: "w-[90px]",
       cell: (row) => <StatusBadge status={row.status} />,
     },
     {
       key: "metric",
       header: "Fuente",
+      widthClassName: "w-[82px]",
       cell: (row) => row.metric,
     },
     {
       key: "createdAt",
       header: "Alta",
+      widthClassName: "w-[82px]",
       cell: (row) => formatDate(row.createdAt),
     },
     {
       key: "id",
       header: "ID",
-      cell: (row) => row.id,
+      widthClassName: "w-[96px]",
+      cell: (row) => (
+        <span
+          className="block truncate font-mono text-[11px] text-lama-muted"
+          title={row.id}
+        >
+          {row.id}
+        </span>
+      ),
     },
     {
       key: "actions",
       header: "Acciones",
+      widthClassName: "w-[148px]",
       cell: (row) => {
         if (row.type === "Comprador") {
           return <BuyerActions buyer={toBuyerEditorData(row)} returnTo={returnTo} />;
@@ -232,6 +250,8 @@ export default async function UsersPage({
         emptyTitle="No hay usuarios para mostrar"
         emptyDescription="Ajusta la busqueda o revisa la conexion con Buyer App y Seller App."
         error={tableError}
+        density="compact"
+        tableClassName="table-fixed"
       />
       <Pagination
         page={query.page}
