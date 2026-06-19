@@ -114,11 +114,19 @@ export type Shipment = {
 export type Payment = {
   id: string;
   orderId: string;
+  buyerId?: string | null;
+  buyerName?: string | null;
+  sellerId?: string | null;
   provider: string;
   status: string;
   amount: number;
+  productAmount?: number | null;
+  shippingAmount?: number | null;
+  commission?: number | null;
+  netAmount?: number | null;
   currency: string;
   createdAt?: string | null;
+  settled?: boolean;
   source: string;
 };
 
@@ -161,4 +169,39 @@ export type ControlPlaneConfiguration = {
   baseUrl?: string;
   apiKeyEnv: string;
   apiKeyConfigured: boolean;
+};
+
+export type AlertSeverity = "critical" | "high" | "medium" | "low";
+
+export type OperationalAlert = {
+  id: string;
+  severity: AlertSeverity;
+  category: "payment" | "shipping" | "order" | "catalog" | "seller";
+  title: string;
+  description: string;
+  recommendation: string;
+  entityType: "order" | "product" | "seller";
+  entityId: string;
+  href: string;
+};
+
+export type OperationalSnapshot = {
+  generatedAt: string;
+  orders: Order[];
+  products: Product[];
+  sellers: Seller[];
+  buyers: BuyerUser[];
+  payments: Payment[];
+  alerts: OperationalAlert[];
+  warnings: string[];
+};
+
+export type CopilotReference = {
+  label: string;
+  href: string;
+};
+
+export type CopilotAnswer = {
+  answer: string;
+  references: CopilotReference[];
 };

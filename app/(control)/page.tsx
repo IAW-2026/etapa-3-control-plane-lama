@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     { label: "Seller", status: "Sincronizado", tone: "ok" },
     { label: "Shipping", status: "Por orden", tone: "ok" },
     { label: "Buyer", status: "Sincronizado", tone: "ok" },
-    { label: "Payments", status: "Derivado", tone: "soft" },
+    { label: "Payments", status: "Sincronizado", tone: "ok" },
   ];
 
   return (

@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleAlert, Database, KeyRound } from "lucide-react";
+import { CheckCircle2, CircleAlert, Database, KeyRound, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { appConfig } from "@/lib/config";
@@ -66,6 +66,19 @@ export default async function ConfigurationPage() {
             No requerida en esta base. Supabase/PostgreSQL puede agregarse si el Control Plane
             necesita guardar configuracion propia.
           </p>
+        </article>
+        <article className="rounded-[24px] border border-lama-border bg-lama-surface/95 p-7 shadow-panel">
+          <div className="flex items-center gap-3">
+            <Sparkles className="h-5 w-5 text-lama-muted" aria-hidden />
+            <h2 className="text-sm font-semibold text-lama-text">Gemini AI</h2>
+          </div>
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-lama-muted">
+              GEMINI_API_KEY {appConfig.geminiApiKey ? "configurada" : "no configurada"}.
+            </p>
+            <StatusBadge status={appConfig.geminiApiKey ? "active" : "pending"} />
+          </div>
+          <p className="mt-3 text-xs font-semibold text-lama-muted">Modelo: {appConfig.geminiModel}</p>
         </article>
       </section>
     </div>

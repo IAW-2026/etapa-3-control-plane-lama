@@ -23,17 +23,19 @@ El Control Plane no reemplaza los paneles admin de Buyer App, Seller App, Shippi
 - Clientes API centralizados en `lib/services`.
 - Busqueda y paginacion por URL donde el contrato la soporta.
 - Detalle de orden consolidando Seller, Buyer, Payments y Shipping cuando existen endpoints.
+- Copiloto administrativo de solo lectura con Gemini.
+- Alertas auditables para detectar inconsistencias operativas y valores atipicos.
 
 ## Estado segun contrato actual
 
 - `Seller App` permite listar vendedores, editar vendedores, actualizar el estado de un vendedor, listar productos y ordenes, y ver detalle de orden.
 - `Shipping App` permite consultar un envio por orden, pero no listar todos los envios.
 - `Buyer App` permite listar compradores, editar compradores, actualizar el estado de un comprador y expone checkout por orden.
-- `Payments App` no expone listado administrativo de pagos ni disputas en el contrato actual.
+- `Payments App` permite listar pagos para el rol `super_admin`; las disputas siguen sin endpoint administrativo.
 
 Por eso:
 
-- `pagos` usa el estado de pago reportado por Seller App;
+- `pagos` consulta el listado real de Payments App e informa si cada pago fue liquidado;
 - `envios` se arma a partir de ordenes de Seller App y consultas por orden a Shipping App;
 - `usuarios` muestra compradores reales de Buyer App y vendedores reales de Seller App, y permite editar, activar o desactivar compradores y vendedores;
 - `disputas` queda bloqueado hasta que Payments publique ese endpoint;
@@ -63,7 +65,13 @@ PAYMENTS_API_KEY=
 INTERNAL_API_KEY=
 CONTROL_PLANE_API_KEY=
 API_REQUEST_TIMEOUT_MS=8000
+
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
 ```
+
+`GEMINI_API_KEY` se usa exclusivamente en el servidor. Sin esa variable, las alertas siguen
+funcionando y la interfaz del copiloto informa que falta configuracion.
 
 Las llamadas administrativas internas envian `x-service-name: control-plane` y `x-api-key` con `INTERNAL_API_KEY`; `CONTROL_PLANE_API_KEY` queda como fallback de compatibilidad. Si un servicio requiere una key propia, el cliente tambien soporta `*_API_KEY`.
 
@@ -93,7 +101,7 @@ Abrir `http://localhost:3000`.
 - Buyer App: `GET /api/compradores`, `PATCH /api/compradores/{clerk_user_id_comprador}`, `PATCH /api/compradores/{clerk_user_id_comprador}/estado`, `GET /api/ordenes/{orden_id}/checkout`
 - Seller App: `GET /api/vendedores`, `PATCH /api/vendedores/{clerk_user_id}`, `PATCH /api/vendedores/{clerk_user_id}/estado`, `GET /api/productos`, `GET /api/ordenes-ventas`, `GET /api/ordenes-ventas/{orden_id}`
 - Shipping App: `GET /api/envios/orden/{orden_id}`
-- Payments App: sin endpoints administrativos de listado en el contrato actual
+- Payments App: `GET /api/pagos?rol=super_admin`
 
 El `PATCH /api/compradores/{clerk_user_id_comprador}` recibe `{ "nombre_comprador": string, "email": string, "telefono": string, "direccion_envio": string }`.
 El `PATCH /api/compradores/{clerk_user_id_comprador}/estado` recibe `{ "activo": true | false }`.

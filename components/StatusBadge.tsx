@@ -43,6 +43,7 @@ const styles: Record<string, string> = {
   rechazado: "border-red-200 bg-red-50 text-red-700",
   refunded: "border-violet-200 bg-violet-50 text-violet-700",
   sold: "border-violet-200 bg-violet-50 text-violet-700",
+  settled: "border-emerald-200 bg-emerald-50 text-emerald-700",
 };
 
 const labels: Record<string, string> = {
@@ -88,6 +89,7 @@ const labels: Record<string, string> = {
   rechazado: "Rechazado",
   refunded: "Reintegrado",
   sold: "Vendido",
+  settled: "Liquidado",
 };
 
 export function StatusBadge({ status }: { status: string }) {
