@@ -13,6 +13,9 @@ export default function SignUpPage() {
           </h1>
         </div>
         <SignUp
+          path="/sign-up"
+          routing="path"
+          fallbackRedirectUrl="/"
           appearance={{
             variables: {
               colorPrimary: "#8fa18d",

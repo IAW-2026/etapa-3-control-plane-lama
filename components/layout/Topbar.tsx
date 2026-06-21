@@ -4,7 +4,6 @@ import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import {
-  AlertTriangle,
   Bot,
   CreditCard,
   Home,
@@ -24,7 +23,6 @@ const navigation = [
   { href: "/ordenes", label: "Ordenes", icon: ShoppingBag },
   { href: "/envios", label: "Envios", icon: Truck },
   { href: "/pagos", label: "Pagos", icon: CreditCard },
-  { href: "/disputas", label: "Disputas", icon: AlertTriangle },
   { href: "/alertas", label: "Alertas", icon: ShieldAlert },
   { href: "/copiloto", label: "Copiloto IA", icon: Bot },
   { href: "/configuracion", label: "Configuracion", icon: Settings },

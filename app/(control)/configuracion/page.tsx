@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleAlert, Database, KeyRound, Sparkles } from "lucide-react";
+import { CheckCircle2, CircleAlert, KeyRound, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { appConfig } from "@/lib/config";
@@ -55,16 +55,6 @@ export default async function ConfigurationPage() {
           <p className="mt-4 text-sm text-lama-muted">
             INTERNAL_API_KEY / CONTROL_PLANE_API_KEY{" "}
             {appConfig.controlPlaneApiKey ? "configurado" : "no configurado"}.
-          </p>
-        </article>
-        <article className="rounded-[24px] border border-lama-border bg-lama-surface/95 p-7 shadow-panel">
-          <div className="flex items-center gap-3">
-            <Database className="h-5 w-5 text-lama-muted" aria-hidden />
-            <h2 className="text-sm font-semibold text-lama-text">Persistencia propia</h2>
-          </div>
-          <p className="mt-4 text-sm text-lama-muted">
-            No requerida en esta base. Supabase/PostgreSQL puede agregarse si el Control Plane
-            necesita guardar configuracion propia.
           </p>
         </article>
         <article className="rounded-[24px] border border-lama-border bg-lama-surface/95 p-7 shadow-panel">

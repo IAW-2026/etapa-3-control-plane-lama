@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   CheckCircle2,
   CreditCard,
   Package,
@@ -29,7 +28,7 @@ export default async function DashboardPage() {
         description="Vista global de vendedores, productos, ordenes, envios y pagos del ecosistema LAMA."
       />
 
-      <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+      <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         <StatCard
           title="Compradores"
           value={stats.buyers}
@@ -65,12 +64,6 @@ export default async function DashboardPage() {
           value={stats.payments}
           helper="Estado de orden"
           icon={<CreditCard className="h-6 w-6" aria-hidden />}
-        />
-        <StatCard
-          title="Disputas"
-          value={stats.disputes}
-          helper="Sin endpoint"
-          icon={<AlertTriangle className="h-6 w-6" aria-hidden />}
         />
       </section>
 

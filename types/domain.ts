@@ -37,7 +37,6 @@ export type DashboardStats = {
   orders: number;
   shipments: number;
   payments: number;
-  disputes: number;
 };
 
 export type BuyerUser = {
@@ -128,16 +127,6 @@ export type Payment = {
   createdAt?: string | null;
   settled?: boolean;
   source: string;
-};
-
-export type Dispute = {
-  id: string;
-  paymentId: string;
-  orderId: string;
-  reason: string;
-  status: "open" | "under_review" | "resolved" | "rejected";
-  amount: number;
-  createdAt: string;
 };
 
 export type OrderCheckout = {

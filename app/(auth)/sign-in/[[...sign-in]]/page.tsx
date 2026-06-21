@@ -2,28 +2,55 @@ import { SignIn } from "@clerk/nextjs";
 
 export default function SignInPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-lama-background px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-lama-muted">
-            LAMA
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold text-lama-text">
-            Control Plane
+    <main className="lama-auth-page">
+      <div className="lama-auth-layout">
+        <section className="lama-auth-copy" aria-label="Acceso administrativo">
+          <p className="lama-kicker">LAMA ANALYTICS</p>
+          <h1 className="lama-auth-title">
+            Ingresar al panel de administracion
           </h1>
+          <p className="lama-auth-description">
+            Acceso protegido para ingresar al panel administrativo del sistema
+            completo.
+          </p>
+        </section>
+
+        <div className="lama-auth-card">
+          <div className="lama-auth-card-inner">
+            <SignIn
+              path="/sign-in"
+              routing="path"
+              fallbackRedirectUrl="/"
+              appearance={{
+                variables: {
+                  colorPrimary: "#3f3f46",
+                  colorText: "#111827",
+                  colorTextSecondary: "#6b7280",
+                  colorBackground: "#ffffff",
+                  colorInputBackground: "#ffffff",
+                  colorInputText: "#111827",
+                  borderRadius: "8px",
+                },
+                elements: {
+                  rootBox: "lama-clerk-root",
+                  cardBox: "lama-clerk-card-box",
+                  card: "lama-clerk-card",
+                  headerTitle: "lama-clerk-title",
+                  headerSubtitle: "lama-clerk-subtitle",
+                  socialButtonsBlockButton: "lama-clerk-social-button",
+                  dividerLine: "lama-clerk-divider-line",
+                  dividerText: "lama-clerk-divider-text",
+                  formFieldLabel: "lama-clerk-label",
+                  formFieldInput: "lama-clerk-input",
+                  formButtonPrimary: "lama-clerk-primary-button",
+                  footer: "lama-clerk-footer",
+                  footerActionText: "lama-clerk-footer-text",
+                  footerActionLink: "lama-clerk-footer-link",
+                },
+              }}
+            />
+          </div>
         </div>
-        <SignIn
-          appearance={{
-            variables: {
-              colorPrimary: "#8fa18d",
-              colorText: "#37413d",
-              colorBackground: "#fffdf8",
-              colorInputBackground: "#fffdf8",
-              colorInputText: "#37413d",
-              borderRadius: "8px",
-            },
-          }}
-        />
       </div>
     </main>
   );

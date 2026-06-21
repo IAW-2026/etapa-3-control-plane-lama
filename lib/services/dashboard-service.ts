@@ -1,6 +1,6 @@
 import "server-only";
 import { listBuyers } from "@/lib/services/buyer-service";
-import { listDisputes, listPayments } from "@/lib/services/payments-service";
+import { listPayments } from "@/lib/services/payments-service";
 import { listOrders, listProducts, listSellers } from "@/lib/services/seller-service";
 import { listShipments } from "@/lib/services/shipping-service";
 import type { DashboardStats, ServiceError } from "@/types/domain";
@@ -16,17 +16,16 @@ export async function getDashboardStats(): Promise<{
   errors: ServiceError[];
   warnings: string[];
 }> {
-  const [buyers, sellers, products, orders, shipments, payments, disputes] = await Promise.all([
+  const [buyers, sellers, products, orders, shipments, payments] = await Promise.all([
     listBuyers(firstPage),
     listSellers(firstPage),
     listProducts(firstPage),
     listOrders(firstPage),
     listShipments(firstPage),
     listPayments(firstPage),
-    listDisputes(firstPage),
   ]);
 
-  const results = [buyers, sellers, products, orders, shipments, payments, disputes];
+  const results = [buyers, sellers, products, orders, shipments, payments];
   const warnings = results.flatMap((result) => (result.warning ? [result.warning] : []));
 
   return {
@@ -37,7 +36,6 @@ export async function getDashboardStats(): Promise<{
       orders: orders.data?.totalItems ?? 0,
       shipments: shipments.data?.totalItems ?? 0,
       payments: payments.data?.totalItems ?? 0,
-      disputes: disputes.data?.totalItems ?? 0,
     },
     errors: results.flatMap((result) => (result.error ? [result.error] : [])),
     warnings,

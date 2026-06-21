@@ -1,9 +1,7 @@
 import "server-only";
 import { type ListQuery } from "@/lib/pagination";
-import { requestJson, unsupportedResult } from "@/lib/services/api-client";
+import { requestJson } from "@/lib/services/api-client";
 import type {
-  ActionResult,
-  Dispute,
   Paginated,
   Payment,
   ServiceResult,
@@ -132,32 +130,6 @@ export async function getPaymentByOrderId(orderId: string): Promise<ServiceResul
       service,
       source: "live",
       endpoint,
-    },
-  };
-}
-
-export async function listDisputes(query: ListQuery): Promise<ServiceResult<Paginated<Dispute>>> {
-  void query;
-
-  return unsupportedResult(
-    service,
-    "Payments App no expone un endpoint de disputas en el contrato actual.",
-    "/api/pagos",
-  );
-}
-
-export async function updateDisputeStatus(
-  id: string,
-  status: "under_review" | "resolved" | "rejected",
-): Promise<ActionResult> {
-  void id;
-  void status;
-
-  return {
-    success: false,
-    error: {
-      code: "ENDPOINT_NOT_AVAILABLE",
-      message: "Payments App no expone acciones administrativas sobre disputas en el contrato actual.",
     },
   };
 }
