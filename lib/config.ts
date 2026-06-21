@@ -23,6 +23,8 @@ export const appConfig = {
   clerkSuperAdminRole: process.env.CLERK_SUPER_ADMIN_ROLE || "super_admin",
   controlPlaneApiKey: firstDefined(process.env.INTERNAL_API_KEY, process.env.CONTROL_PLANE_API_KEY),
   requestTimeoutMs: Number(process.env.API_REQUEST_TIMEOUT_MS || 8000),
+  geminiApiKey: firstDefined(process.env.GEMINI_API_KEY),
+  geminiModel: process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash",
   services: {
     buyer: normalizeBaseUrl(firstDefined(process.env.BUYER_API_URL, process.env.BUYER_APP_URL)),
     seller: normalizeBaseUrl(firstDefined(process.env.SELLER_API_URL, process.env.SELLER_APP_URL)),

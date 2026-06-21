@@ -48,7 +48,7 @@ export function ConfirmDialog({
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          "rounded-[14px] border px-4 py-2 text-xs font-bold transition",
+          "rounded-[14px] border px-3 py-1.5 text-xs font-bold transition",
           variant === "danger"
             ? "border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
             : "border-lama-border bg-white text-lama-text hover:border-lama-primary",

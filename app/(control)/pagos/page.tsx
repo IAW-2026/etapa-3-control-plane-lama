@@ -1,4 +1,5 @@
 import { DataTable, type DataTableColumn } from "@/components/DataTable";
+import { FilterPanel } from "@/components/FilterPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -34,6 +35,11 @@ export default async function PaymentsPage({
       cell: (payment) => payment.provider,
     },
     {
+      key: "buyer",
+      header: "Comprador",
+      cell: (payment) => payment.buyerName ?? payment.buyerId ?? "-",
+    },
+    {
       key: "status",
       header: "Estado",
       cell: (payment) => <StatusBadge status={payment.status} />,
@@ -42,6 +48,11 @@ export default async function PaymentsPage({
       key: "amount",
       header: "Monto",
       cell: (payment) => formatCurrency(payment.amount, payment.currency),
+    },
+    {
+      key: "settled",
+      header: "Liquidacion",
+      cell: (payment) => <StatusBadge status={payment.settled ? "settled" : "pending"} />,
     },
     {
       key: "createdAt",
@@ -54,7 +65,18 @@ export default async function PaymentsPage({
     <div className="space-y-6">
       <PageHeader
         title="Pagos"
-        description="Estado de pagos consolidado desde las ordenes reportadas por Seller App."
+        description="Pagos y liquidaciones consultados directamente desde Payments App."
+      />
+      <FilterPanel
+        clearHref="/pagos"
+        fields={[{
+          type: "search",
+          name: "q",
+          label: "Busqueda",
+          placeholder: "Buscar pago, orden, comprador o vendedor",
+          defaultValue: query.q,
+          className: "lg:col-span-6",
+        }]}
       />
       {result.warning ? (
         <div className="rounded-[22px] border border-lama-border bg-lama-surface/80 p-5 text-sm font-medium leading-6 text-lama-muted shadow-soft">
@@ -66,7 +88,7 @@ export default async function PaymentsPage({
         data={page?.items ?? []}
         getRowKey={(payment) => payment.id}
         emptyTitle="No hay pagos para mostrar"
-        emptyDescription="Conecta Seller App."
+        emptyDescription="Conecta Payments App o ajusta la busqueda."
         error={result.error?.message}
       />
       <Pagination

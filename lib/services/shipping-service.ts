@@ -62,6 +62,7 @@ export async function getShipmentByOrderId(orderId: string): Promise<ServiceResu
   const response = await requestJson<RawShipment>({
     service,
     path: `/api/envios/orden/${orderId}`,
+    authAs: "control-plane",
   });
 
   return {

@@ -1,7 +1,6 @@
 import "server-only";
 import { type ListQuery } from "@/lib/pagination";
-import { unsupportedResult } from "@/lib/services/api-client";
-import { getOrderById, listOrders } from "@/lib/services/seller-service";
+import { requestJson, unsupportedResult } from "@/lib/services/api-client";
 import type {
   ActionResult,
   Dispute,
@@ -11,85 +10,128 @@ import type {
 } from "@/types/domain";
 
 const service = "payments" as const;
+const endpoint = "/api/pagos";
+
+type RawPayment = {
+  pago_id: string;
+  orden_id: string;
+  comprador_id?: string | null;
+  comprador_nombre?: string | null;
+  vendedor_id?: string | null;
+  monto_producto?: number | null;
+  monto_envio?: number | null;
+  comision?: number | null;
+  monto_neto?: number | null;
+  monto_total: number;
+  moneda?: string | null;
+  estado: string;
+  proveedor?: string | null;
+  fecha_creacion?: string | null;
+  liquidado?: boolean;
+};
 
 function mapPaymentStatus(status: string) {
-  if (status === "aprobado") {
+  const normalized = status.trim().toLowerCase();
+
+  if (["aprobado", "approved", "pagado", "paid"].includes(normalized)) {
     return "approved";
   }
 
-  if (status === "rechazado") {
+  if (["rechazado", "rejected", "fallido", "failed"].includes(normalized)) {
     return "rejected";
   }
+
+  if (["reembolsado", "refunded"].includes(normalized)) return "refunded";
 
   return "pending";
 }
 
+function mapPayment(raw: RawPayment): Payment {
+  return {
+    id: raw.pago_id,
+    orderId: raw.orden_id,
+    buyerId: raw.comprador_id ?? null,
+    buyerName: raw.comprador_nombre ?? null,
+    sellerId: raw.vendedor_id ?? null,
+    provider: raw.proveedor ?? "Payments App",
+    status: mapPaymentStatus(raw.estado),
+    amount: raw.monto_total,
+    productAmount: raw.monto_producto ?? null,
+    shippingAmount: raw.monto_envio ?? null,
+    commission: raw.comision ?? null,
+    netAmount: raw.monto_neto ?? null,
+    currency: raw.moneda ?? "ARS",
+    createdAt: raw.fecha_creacion ?? null,
+    settled: raw.liquidado === true,
+    source: "payments-api",
+  };
+}
+
+function matchesSearch(payment: Payment, search: string) {
+  if (!search) return true;
+  const value = search.toLowerCase();
+  return [
+    payment.id,
+    payment.orderId,
+    payment.buyerId,
+    payment.buyerName,
+    payment.sellerId,
+    payment.provider,
+    payment.status,
+  ].some((field) => field?.toLowerCase().includes(value));
+}
+
 export async function listPayments(query: ListQuery): Promise<ServiceResult<Paginated<Payment>>> {
-  const orders = await listOrders({
-    q: "",
-    page: query.page,
-    pageSize: query.pageSize,
+  const response = await requestJson<RawPayment[]>({
+    service,
+    path: endpoint,
+    query: { rol: "super_admin" },
+    headers: { "x-service-name": "admin" },
   });
 
-  if (!orders.data) {
+  if (!response.data) {
     return {
       data: null,
-      error: orders.error,
-      warning: orders.warning,
-      meta: orders.meta,
+      error: response.error,
+      warning: response.warning,
+      meta: response.meta,
     };
   }
 
+  const filtered = response.data.map(mapPayment).filter((payment) => matchesSearch(payment, query.q));
+  const totalItems = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / query.pageSize));
+  const page = Math.min(query.page, totalPages);
+  const start = (page - 1) * query.pageSize;
+
   return {
     data: {
-      items: orders.data.items.map((order) => ({
-        id: order.id,
-        orderId: order.id,
-        provider: "Payments App",
-        status: mapPaymentStatus(order.paymentStatus),
-        amount: order.total,
-        currency: order.currency,
-        createdAt: order.createdAt,
-        source: "seller-order-status",
-      })),
-      page: orders.data.page,
-      pageSize: orders.data.pageSize,
-      totalItems: orders.data.totalItems,
-      totalPages: orders.data.totalPages,
+      items: filtered.slice(start, start + query.pageSize),
+      page,
+      pageSize: query.pageSize,
+      totalItems,
+      totalPages,
     },
-    warning:
-      "Payments App no expone un listado administrativo de pagos; esta vista usa el estado de pago reportado por Seller App.",
     meta: {
       service,
-      source: "derived",
-      endpoint: "/api/ordenes-ventas",
+      source: "live",
+      endpoint,
     },
   };
 }
 
 export async function getPaymentByOrderId(orderId: string): Promise<ServiceResult<Payment>> {
-  const order = await getOrderById(orderId);
+  const payments = await listPayments({ q: orderId, page: 1, pageSize: 100 });
+  const payment = payments.data?.items.find((item) => item.orderId === orderId) ?? null;
 
   return {
-    data: order.data
-      ? {
-          id: order.data.id,
-          orderId: order.data.id,
-          provider: "Payments App",
-          status: mapPaymentStatus(order.data.paymentStatus),
-          amount: order.data.total,
-          currency: order.data.currency,
-          createdAt: order.data.createdAt,
-          source: "seller-order-status",
-        }
-      : null,
-    error: order.error,
-    warning:
-      "Payments App no expone detalle de pago por orden; se usa el estado de pago reportado por Seller App.",
+    data: payment,
+    error: payments.error,
+    warning: payments.warning,
     meta: {
       service,
-      source: "derived",
-      endpoint: "/api/ordenes-ventas/{orden_id}",
+      source: "live",
+      endpoint,
     },
   };
 }

@@ -121,7 +121,7 @@ export function BuyerActions({ buyer, returnTo }: BuyerActionsProps) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <button
         type="button"
         onClick={() => {
@@ -129,7 +129,7 @@ export function BuyerActions({ buyer, returnTo }: BuyerActionsProps) {
           setDraft(currentBuyer);
           setEditOpen(true);
         }}
-        className="rounded-[14px] border border-lama-border bg-white px-4 py-2 text-xs font-bold text-lama-text transition hover:border-lama-primary hover:bg-lama-primary/10"
+        className="rounded-[14px] border border-lama-border bg-white px-3 py-1.5 text-xs font-bold text-lama-text transition hover:border-lama-primary hover:bg-lama-primary/10"
       >
         Editar
       </button>
