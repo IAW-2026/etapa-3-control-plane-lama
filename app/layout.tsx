@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "LAMA Control Plane",
   description: "Panel global de administracion para el marketplace LAMA.",
+  icons: {
+    icon: "/fav_icon.png",
+  },
 };
 
 export default function RootLayout({
