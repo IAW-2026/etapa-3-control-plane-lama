@@ -30,11 +30,17 @@ export async function listShipments(query: ListQuery): Promise<ServiceResult<Pag
     };
   }
 
+  const orderItems = orders.data.items;
   const shipmentResults = await Promise.all(
-    orders.data.items.map((order) => getShipmentByOrderId(order.id)),
+    orderItems.map((order) => getShipmentByOrderId(order.id)),
   );
 
-  const items = shipmentResults.flatMap((result) => (result.data ? [result.data] : []));
+  // Shipping App no devuelve fecha de actualizacion; se usa la de la orden asociada.
+  const items = shipmentResults.flatMap((result, index) =>
+    result.data
+      ? [{ ...result.data, updatedAt: result.data.updatedAt ?? orderItems[index].updatedAt ?? null }]
+      : [],
+  );
   const firstError = shipmentResults.find(
     (result) => result.error && result.error.status !== 404,
   )?.error;

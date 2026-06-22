@@ -22,41 +22,68 @@ export default async function PaymentsPage({
     {
       key: "id",
       header: "Pago",
-      cell: (payment) => <span className="font-medium">{payment.id}</span>,
+      widthClassName: "w-[110px]",
+      cell: (payment) => (
+        <span className="block truncate font-medium" title={payment.id}>
+          {payment.id}
+        </span>
+      ),
     },
     {
       key: "order",
       header: "Orden",
-      cell: (payment) => payment.orderId,
+      widthClassName: "w-[110px]",
+      cell: (payment) => (
+        <span className="block truncate" title={payment.orderId}>
+          {payment.orderId}
+        </span>
+      ),
     },
     {
       key: "provider",
       header: "Proveedor",
-      cell: (payment) => payment.provider,
+      widthClassName: "w-[110px]",
+      cell: (payment) => (
+        <span className="block truncate" title={payment.provider}>
+          {payment.provider}
+        </span>
+      ),
     },
     {
       key: "buyer",
       header: "Comprador",
-      cell: (payment) => payment.buyerName ?? payment.buyerId ?? "-",
+      widthClassName: "w-[140px]",
+      cell: (payment) => {
+        const buyer = payment.buyerName ?? payment.buyerId ?? "-";
+        return (
+          <span className="block truncate" title={buyer}>
+            {buyer}
+          </span>
+        );
+      },
     },
     {
       key: "status",
       header: "Estado",
+      widthClassName: "w-[110px]",
       cell: (payment) => <StatusBadge status={payment.status} />,
     },
     {
       key: "amount",
       header: "Monto",
+      widthClassName: "w-[100px]",
       cell: (payment) => formatCurrency(payment.amount, payment.currency),
     },
     {
       key: "settled",
       header: "Liquidacion",
+      widthClassName: "w-[120px]",
       cell: (payment) => <StatusBadge status={payment.settled ? "settled" : "pending"} />,
     },
     {
       key: "createdAt",
       header: "Fecha",
+      widthClassName: "w-[100px]",
       cell: (payment) => formatDate(payment.createdAt),
     },
   ];
@@ -90,6 +117,8 @@ export default async function PaymentsPage({
         emptyTitle="No hay pagos para mostrar"
         emptyDescription="Conecta Payments App o ajusta la busqueda."
         error={result.error?.message}
+        density="compact"
+        tableClassName="table-fixed"
       />
       <Pagination
         page={query.page}

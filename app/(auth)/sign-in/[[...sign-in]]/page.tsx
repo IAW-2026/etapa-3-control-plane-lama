@@ -5,7 +5,7 @@ export default function SignInPage() {
     <main className="lama-auth-page">
       <div className="lama-auth-layout">
         <section className="lama-auth-copy" aria-label="Acceso administrativo">
-          <p className="lama-kicker">LAMA ANALYTICS</p>
+          <p className="lama-kicker">CONTROL PLANE</p>
           <h1 className="lama-auth-title">
             Ingresar al panel de administracion
           </h1>

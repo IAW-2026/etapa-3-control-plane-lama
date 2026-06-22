@@ -22,6 +22,13 @@ type FilterField =
       defaultValue?: string;
       options: FilterOption[];
       className?: string;
+    }
+  | {
+      type: "date";
+      name: string;
+      label: string;
+      defaultValue?: string;
+      className?: string;
     };
 
 type FilterPanelProps = {
@@ -55,6 +62,13 @@ export function FilterPanel({ fields, clearHref, hiddenFields }: FilterPanelProp
               placeholder={field.placeholder}
               className="h-14 w-full min-w-0 rounded-[14px] border border-lama-border bg-white px-4 text-sm font-bold text-lama-text outline-none shadow-soft transition placeholder:text-lama-muted/80 focus:border-lama-primary focus:ring-4 focus:ring-lama-primary/15"
             />
+          ) : field.type === "date" ? (
+            <input
+              type="date"
+              name={field.name}
+              defaultValue={field.defaultValue}
+              className="h-14 w-full min-w-0 rounded-[14px] border border-lama-border bg-white px-4 text-sm font-bold text-lama-text outline-none shadow-soft transition focus:border-lama-primary focus:ring-4 focus:ring-lama-primary/15"
+            />
           ) : (
             <select
               name={field.name}
@@ -72,16 +86,16 @@ export function FilterPanel({ fields, clearHref, hiddenFields }: FilterPanelProp
       ))}
       <div className="min-w-0 lg:col-span-2">
         <span className="mb-3 block text-sm font-black text-lama-text">Acciones</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="submit"
-            className="h-14 rounded-[14px] bg-lama-primary px-6 text-sm font-black text-white transition hover:bg-lama-primary/90"
+            className="h-11 rounded-[12px] bg-lama-primary px-4 text-sm font-black text-white transition hover:bg-lama-primary/90"
           >
             Aplicar
           </button>
           <Link
             href={clearHref}
-            className="inline-flex h-14 items-center justify-center rounded-[14px] border border-lama-border bg-white px-6 text-sm font-black text-lama-text transition hover:border-lama-primary hover:bg-lama-primary/10"
+            className="inline-flex h-11 items-center justify-center rounded-[12px] border border-lama-border bg-white px-4 text-sm font-black text-lama-text transition hover:border-lama-primary hover:bg-lama-primary/10"
           >
             Limpiar
           </Link>
