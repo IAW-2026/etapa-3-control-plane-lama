@@ -15,28 +15,28 @@ type RawShipment = {
 };
 
 export async function listShipments(query: ListQuery): Promise<ServiceResult<Paginated<Shipment>>> {
-  const orders = await listOrders({
+  const allOrders = await listOrders({
     q: "",
-    page: query.page,
-    pageSize: query.pageSize,
+    page: 1,
+    pageSize: 1000,
   });
 
-  if (!orders.data) {
+  if (!allOrders.data) {
     return {
       data: null,
-      error: orders.error,
-      warning: orders.warning,
-      meta: orders.meta,
+      error: allOrders.error,
+      warning: allOrders.warning,
+      meta: allOrders.meta,
     };
   }
 
-  const orderItems = orders.data.items;
+  const orderItems = allOrders.data.items;
   const shipmentResults = await Promise.all(
     orderItems.map((order) => getShipmentByOrderId(order.id)),
   );
 
   // Shipping App no devuelve fecha de actualizacion; se usa la de la orden asociada.
-  const items = shipmentResults.flatMap((result, index) =>
+  const allItems = shipmentResults.flatMap((result, index) =>
     result.data
       ? [{ ...result.data, updatedAt: result.data.updatedAt ?? orderItems[index].updatedAt ?? null }]
       : [],
@@ -45,17 +45,14 @@ export async function listShipments(query: ListQuery): Promise<ServiceResult<Pag
     (result) => result.error && result.error.status !== 404,
   )?.error;
 
+  const totalItems = allItems.length;
+  const { page, pageSize } = query;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const items = allItems.slice((page - 1) * pageSize, page * pageSize);
+
   return {
-    data: {
-      items,
-      page: orders.data.page,
-      pageSize: orders.data.pageSize,
-      totalItems: orders.data.totalItems,
-      totalPages: orders.data.totalPages,
-    },
+    data: { items, page, pageSize, totalItems, totalPages },
     error: firstError,
-    warning:
-      "Shipping App no expone un listado global de envios; esta vista se arma a partir de las ordenes de Seller App.",
     meta: {
       service,
       source: "derived",
